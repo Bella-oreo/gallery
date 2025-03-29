@@ -8,6 +8,9 @@ let Image = require('../models/images');
 
 var db = []
 
+
+
+
 router.get('/', (req,res)=>{
     
     Image.find({}, function(err, images){
