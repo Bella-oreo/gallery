@@ -2,6 +2,14 @@ pipeline {
     agent any
 
     stages {
+
+        stage('Install Node.js') {
+            steps {
+                sh 'curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash -'
+                sh 'sudo apt-get install -y nodejs'
+            }
+        }
+
         stage('Checkout') {
             steps {
                 echo 'Cloning the repository...'
@@ -12,7 +20,8 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 echo 'Installing dependencies...'
-                sh 'npm install'
+                sh '/usr/bin/npm install'
+
             }
         }
 
@@ -30,6 +39,14 @@ pipeline {
                 // Add your actual deployment script here if needed
             }
         }
+
+        stage('Verify Node.js') {
+           steps {
+             sh 'node -v'
+               sh 'npm -v'
+    }
+}
+
     }
 
     post {
