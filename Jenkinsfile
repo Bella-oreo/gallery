@@ -5,7 +5,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 echo 'Cloning the repository...'
-                git branch: 'main', url: 'https://github.com/Bella-oreo/gallery.git'
+                git branch: 'master', url: 'https://github.com/Bella-oreo/gallery.git'
             }
         }
 
