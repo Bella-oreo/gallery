@@ -3,12 +3,8 @@ pipeline {
     stages {
         stage('Install Node.js') {
             steps {
-                sh '''
-                    apt-get update
-                    apt-get install -y curl
-                    curl -sL https://deb.nodesource.com/setup_20.x | bash -
-                    apt-get install -y nodejs
-                '''
+                sh 'sudo apt-get update'
+                sh 'sudo apt-get install -y nodejs'
             }
         }
         stage('Install Dependencies') {
@@ -23,7 +19,7 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                echo 'Deploying application...'
+                sh 'npm start'
             }
         }
     }
