@@ -1,46 +1,30 @@
 pipeline {
     agent any
-
     stages {
         stage('Install Node.js') {
             steps {
                 sh '''
-                sudo apt-get update
-                curl -sL https://deb.nodesource.com/setup_20.x | sudo bash -
-                sudo apt-get install -y nodejs
-                node -v
+                    apt-get update
+                    apt-get install -y curl
+                    curl -sL https://deb.nodesource.com/setup_20.x | bash -
+                    apt-get install -y nodejs
                 '''
             }
         }
-        
         stage('Install Dependencies') {
             steps {
-                sh '''
-                npm install
-                '''
+                sh 'npm install'
             }
         }
-
         stage('Build') {
             steps {
-                sh '''
-                npm run build
-                '''
+                sh 'npm run build'
             }
         }
-
         stage('Deploy') {
             steps {
-                sh '''
-                node server.js
-                '''
+                echo 'Deploying application...'
             }
-        }
-    }
-
-    post {
-        failure {
-            echo "Pipeline failed!"
         }
     }
 }
