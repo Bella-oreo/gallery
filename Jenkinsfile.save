@@ -1,0 +1,51 @@
+pipeline {
+    agent any
+
+    triggers {
+        pollSCM('* * * * *')  // Polls changes every minute
+    }
+
+    environment {
+        SLACK_WEBHOOK_URL = credentials('https://hooks.slack.com/services/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')  // Slack Webhook URL from Jenkins credentials
+    }
+
+    stages {
+        stage('Install Node.js') {
+            steps {
+                sh 'sudo apt-get update'
+                sh 'sudo apt-get install -y nodejs'
+            }
+        }
+        stage('Install Dependencies') {
+            steps {
+                sh 'npm install'
+            }
+        }
+        stage('Build') {
+            steps {
+                sh 'npm run build'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                sh 'npm start'
+            }
+        }
+        stage('Slack Notification') {
+            steps {
+                script {
+                    def buildId = env.BUILD_ID
+                    def renderUrl = "https://your-render-site.com"  // Replace with your actual render site URL
+                    def message = "🚀 Deployment successful! Build ID: ${buildId}. Site: ${renderUrl}"
+                    
+                    sh """
+                    curl -X POST -H 'Content-type: application/json' \
+                    --data '{"text": "${message}"}' ${SLACK_WEBHOOK_URL}
+                    """
+                }
+            }
+        }
+    }
+}
+
+
