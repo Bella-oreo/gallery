@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     environment {
-        // Define any global environment variables here
         DOCKER_IMAGE = "bella-oreo/gallery:latest"
         REPO_URL = "https://github.com/Bella-oreo/gallery.git"
     }
@@ -21,7 +20,7 @@ pipeline {
             steps {
                 script {
                     echo "Building the project..."
-                    sh 'docker build -t ${DOCKER_IMAGE} .'
+                    sh "docker build -t ${DOCKER_IMAGE} ."
                 }
             }
         }
@@ -30,7 +29,7 @@ pipeline {
             steps {
                 script {
                     echo "Running tests..."
-                    sh 'docker run --rm ${DOCKER_IMAGE} npm test'
+                    sh "docker run --rm ${DOCKER_IMAGE} npm test"
                 }
             }
         }
@@ -40,7 +39,7 @@ pipeline {
                 script {
                     echo "Logging in to DockerHub..."
                     withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                        sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                        sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
                     }
                 }
             }
@@ -50,20 +49,22 @@ pipeline {
             steps {
                 script {
                     echo "Pushing the Docker image..."
-                    sh 'docker push ${DOCKER_IMAGE}'
+                    sh "docker push ${DOCKER_IMAGE}"
                 }
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy to Render') {
             steps {
                 script {
-                    echo "Deploying the application..."
-                    sh '''
-                        docker stop gallery || true
-                        docker rm gallery || true
-                        docker run -d --name gallery -p 80:80 ${DOCKER_IMAGE}
-                    '''
+                    echo "Deploying to Render..."
+                    withCredentials([usernamePassword(credentialsId: 'render-credentials', usernameVariable: 'RENDER_API_KEY', passwordVariable: 'RENDER_API_KEY')]) {
+                        // Login to Render using the API key
+                        sh "render login --api-key $RENDER_API_KEY"
+
+                        // Deploy the service on Render
+                        sh "render deploy --service-name gallery --branch main"
+                    }
                 }
             }
         }
@@ -72,7 +73,7 @@ pipeline {
             steps {
                 script {
                     echo "Cleaning up old Docker images..."
-                    sh 'docker image prune -f'
+                    sh "docker image prune -f"
                 }
             }
         }
