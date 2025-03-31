@@ -9,6 +9,13 @@ const fs = require('fs');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Set up the EJS view engine
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
+// Serve static files (CSS, images, etc.)
+app.use(express.static(path.join(__dirname, 'public')));
+
 // Security Middleware
 app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true, limit: '2mb' }));
@@ -109,6 +116,23 @@ app.post('/upload', uploadLimiter, async (req, res) => {
   }
 });
 
+// Home Route to Render Upload Form
+app.get('/', (req, res) => {
+  const imageDir = path.join(__dirname, 'uploads');
+  fs.readdir(imageDir, (err, files) => {
+    if (err) {
+      return res.status(500).send('Unable to read upload directory');
+    }
+
+    const images = files.map(file => ({
+      name: file,
+      path: path.join('uploads', file)
+    }));
+
+    res.render('index', { images, msg: '' });
+  });
+});
+
 // Error Handling Middleware
 app.use((err, req, res, next) => {
   console.error(`Global Error: ${err.stack}`);
@@ -120,12 +144,5 @@ app.use((err, req, res, next) => {
 
 // Server Initialization
 app.listen(PORT, () => {
-  console.log(`Secure Gallery Server running on port ${PORT}`);
-  console.log(`Upload directory: ${path.join(__dirname, 'uploads')}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });
-
-// Create uploads directory on startup
-const uploadDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
