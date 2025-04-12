@@ -25,6 +25,8 @@ pipeline {
                 echo 'No build step needed for this project'
             }
         }
+
+        /**just commenting this first till i create test branches
         stage("testing") {
             steps {
                 echo 'testing'
@@ -40,6 +42,7 @@ pipeline {
                 }
             }
         }
+        **/
         stage("deploy") {
             steps {
                 script {
