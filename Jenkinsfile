@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        NODE_VERSION = '22.12.0'
+        NODE_VERSION = '23.11.0'
         RENDER_DEPLOY_HOOK = 'https://api.render.com/deploy/srv-cvs09g2dbo4c73fqu540?key=BEvXN5DL3LE'
         RENDER_SITE_URL = "https://gallery-zce1.onrender.com/"
     }
@@ -25,8 +25,6 @@ pipeline {
                 echo 'No build step needed for this project'
             }
         }
-
-        /**just commenting this first till i create test branches
         stage("testing") {
             steps {
                 echo 'testing'
@@ -42,7 +40,7 @@ pipeline {
                 }
             }
         }
-        **/
+
         stage("deploy") {
             steps {
                 script {
