@@ -5,7 +5,7 @@ pipeline {
         NODE_VERSION = '23.11.0'
         RENDER_DEPLOY_HOOK = 'https://api.render.com/deploy/srv-cvs09g2dbo4c73fqu540?key=BEvXN5DL3LE'
         RENDER_SITE_URL = "https://gallery-zce1.onrender.com/"
-        SLACK_WEBHOOK_URL = 'https://hooks.slack.com/services/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'
+        SLACK_WEBHOOK_URL = 'https://hooks.slack.com/services/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'
     }
 
     tools {
@@ -57,12 +57,13 @@ pipeline {
             }
             post {
                 success {
-                    echo 'Sending success notification to Slack'
-                    sh """
-                        curl -X POST -H 'Content-type: application/json' --data '{
-                          "text": ":white_check_mark: *Deployment Successful!*\n*Build ID:* ${env.BUILD_ID}\n*Render URL:* ${RENDER_SITE_URL}"
-                        }' ${SLACK_WEBHOOK_URL}
-                    """
+                    slackSend(
+                        webhookUrl: 'https://hooks.slack.com/services/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',
+                        message: """:white_check_mark: Deployment Successful!
+Build ID: ${env.BUILD_ID}
+Render Site URL: ${RENDER_SITE_URL}"""
+                    )
+
                 }
             }
         }
