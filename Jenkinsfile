@@ -5,7 +5,6 @@ pipeline {
         NODE_VERSION = '23.11.0'
         RENDER_DEPLOY_HOOK = 'https://api.render.com/deploy/srv-cvs09g2dbo4c73fqu540?key=BEvXN5DL3LE'
         RENDER_SITE_URL = "https://gallery-zce1.onrender.com/"
-        SLACK_WEBHOOK_URL = 'https://hooks.slack.com/services/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'
     }
 
     tools {
@@ -57,16 +56,20 @@ pipeline {
             }
             post {
                 success {
-                    slackSend(
-                        channel:'#ipassignment',
-                        webhookUrl: 'https://hooks.slack.com/services/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',
-                        message: """:white_check_mark: Deployment Successful!
+                    script {
+                        withCredentials([string(credentialsId: 'slack-webhook-url', variable: 'SLACK_WEBHOOK')]) {
+                            slackSend(
+                                channel: '#ipassignment',
+                                webhookUrl: SLACK_WEBHOOK,
+                                message: """:white_check_mark: Deployment Successful!
 Build ID: ${env.BUILD_ID}
 Render Site URL: ${RENDER_SITE_URL}"""
-                    )
-
+                            )
+                        }
+                    }
                 }
             }
         }
     }
 }
+
